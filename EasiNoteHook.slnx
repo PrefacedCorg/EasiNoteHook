@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EasiNoteHookDeployer/EasiNoteHookDeployer.csproj" />
+    <Project Path="src/EasiNoteToolbarHook/EasiNoteToolbarHook.csproj" />
+  </Folder>
+</Solution>

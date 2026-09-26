@@ -1,0 +1,20 @@
+<Project>
+
+  <!-- 全仓库共享属性：插件标识、版本号、产品名。
+       两个工程（net6.0 插件 / net472 部署器）都自动导入本文件。 -->
+  <PropertyGroup>
+    <Product>EasiNoteHook</Product>
+    <Version>1.1.0</Version>
+    <Authors>icc</Authors>
+    <Company>icc</Company>
+
+    <!-- 插件标识：白板靠 Id 与 NetEntryPoint 认插件，改动会导致已部署目录失效 -->
+    <PluginId>EasiNoteToolbarHook</PluginId>
+    <PluginDisplayName>悬浮工具栏拦截</PluginDisplayName>
+    <PluginDescription>进程内 stub 白板的桌面模式悬浮工具栏</PluginDescription>
+
+    <!-- 部署器：双击即由系统弹 UAC；部署机无需安装额外运行时 -->
+    <DeployerAssemblyName>EasiNoteHookDeploy</DeployerAssemblyName>
+  </PropertyGroup>
+
+</Project>

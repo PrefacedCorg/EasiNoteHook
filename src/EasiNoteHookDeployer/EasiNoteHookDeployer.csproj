@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- .NET Framework 4.7.2：Windows 10/11 自带，部署机不需要装任何运行时 -->
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <AssemblyName>$(DeployerAssemblyName)</AssemblyName>
+    <RootNamespace>EasiNoteHookDeploy</RootNamespace>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <NeutralLanguage>zh-Hans</NeutralLanguage>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <!-- 双击即由系统弹 UAC 直接以管理员运行 -->
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- 插件工程与本工程的相对位置；构建时先编译插件再把产物内嵌进来 -->
+    <PluginProject>$(MSBuildThisFileDirectory)..\EasiNoteToolbarHook\$(PluginId).csproj</PluginProject>
+    <PluginOutputDir>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)', '..\EasiNoteToolbarHook', 'bin', '$(Configuration)', 'net6.0'))</PluginOutputDir>
+    <!-- 一次性分发的外部文件（替换白板 DLL / 一体机伪装 setup） -->
+    <PayloadDir>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)', '..\..', 'payload'))</PayloadDir>
+    <!-- 内嵌资源名前缀，运行时按前缀决定释放到哪 -->
+    <PluginIdPrefix>payload/plugin/</PluginIdPrefix>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 让 dotnet build 无需装 VS 也能编译 net472 -->
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!-- 插件文件以资源方式内嵌，部署工具单 exe 即可分发。
+       用通配符收集插件 bin 下的全部 DLL，加新的运行时依赖时不需要改这里。 -->
+  <Target Name="CollectPluginPayload" BeforeTargets="PrepareForBuild">
+    <MSBuild Projects="$(PluginProject)" Targets="Build" Properties="Configuration=$(Configuration)" />
+    <ItemGroup>
+      <PluginRuntimeFile Include="$(PluginOutputDir)*.dll" />
+      <EmbeddedResource Include="@(PluginRuntimeFile)" LogicalName="$(PluginIdPrefix)%(Filename)%(Extension)" />
+      <!-- payload\main\* → 替换到白板 Main 目录 -->
+      <MainPayloadFile Include="$(PayloadDir)main\*" />
+      <EmbeddedResource Include="@(MainPayloadFile)" LogicalName="payload/main/%(Filename)%(Extension)" />
+      <!-- payload\setup\* → 释放到临时目录按需执行 -->
+      <SetupPayloadFile Include="$(PayloadDir)setup\*" />
+      <EmbeddedResource Include="@(SetupPayloadFile)" LogicalName="payload/setup/%(Filename)%(Extension)" />
+    </ItemGroup>
+  </Target>
+
+</Project>

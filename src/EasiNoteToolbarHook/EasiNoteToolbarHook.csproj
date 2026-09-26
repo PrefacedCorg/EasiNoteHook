@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- 希沃白板 5.2.4.11451 自带 .NET 6 运行时，插件必须用 net6.0 目标 -->
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <AssemblyName>$(PluginId)</AssemblyName>
+    <RootNamespace>Cvte.EasiNote.Extensions</RootNamespace>
+    <!-- 类库默认不复制 NuGet 依赖：插件需要和 0Harmony.dll 一起单文件夹分发 -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <!-- 该程序集会被注入到白板进程，避免生成额外探测元数据 -->
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Lib.Harmony" Version="2.3.3" />
+  </ItemGroup>
+
+</Project>
